@@ -1,0 +1,4 @@
+{
+  "weatherHost" : "https://api.forecast.io/",
+  "weatherApiKey" : ""
+}
