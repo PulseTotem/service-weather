@@ -32,8 +32,10 @@ class WeatherHelper {
 		var newWeather : Weather = new Weather();
 		newWeather.setId(jsonDesc.time);
 
-		var creationDate : any = moment(jsonDesc.time);
+		var creationDate : any = moment.unix(jsonDesc.time);
 		newWeather.setCreationDate(creationDate.toDate());
+
+		newWeather.setTime(jsonDesc.time);
 
 		if(typeof(jsonDesc.summary) != "undefined") {
 			newWeather.setSummary(jsonDesc.summary);
@@ -162,8 +164,36 @@ class WeatherHelper {
 		}
 
 		if(typeof(jsonDesc.windBearing) != "undefined") {
-			if(jsonDesc.windBearing) {
-				//TODO
+			if(jsonDesc.windBearing > 337.5 && jsonDesc.windBearing <= 22.5) {
+				newWeather.setWindDirection(WeatherWindDirection.NORTH);
+			}
+
+			if(jsonDesc.windBearing > 22.5 && jsonDesc.windBearing <= 67.5) {
+				newWeather.setWindDirection(WeatherWindDirection.NORTH_EAST);
+			}
+
+			if(jsonDesc.windBearing > 67.5 && jsonDesc.windBearing <= 112.5) {
+				newWeather.setWindDirection(WeatherWindDirection.EAST);
+			}
+
+			if(jsonDesc.windBearing > 112.5 && jsonDesc.windBearing <= 157.5) {
+				newWeather.setWindDirection(WeatherWindDirection.SOUTH_EAST);
+			}
+
+			if(jsonDesc.windBearing > 157.5 && jsonDesc.windBearing <= 202.5) {
+				newWeather.setWindDirection(WeatherWindDirection.SOUTH);
+			}
+
+			if(jsonDesc.windBearing > 202.5 && jsonDesc.windBearing <= 247.5) {
+				newWeather.setWindDirection(WeatherWindDirection.SOUTH_WEST);
+			}
+
+			if(jsonDesc.windBearing > 247.5 && jsonDesc.windBearing <= 292.5) {
+				newWeather.setWindDirection(WeatherWindDirection.WEST);
+			}
+
+			if(jsonDesc.windBearing > 292.5 && jsonDesc.windBearing <= 337.5) {
+				newWeather.setWindDirection(WeatherWindDirection.NORTH_WEST);
 			}
 		}
 

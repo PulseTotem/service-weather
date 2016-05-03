@@ -8,11 +8,7 @@
 
 /// <reference path="./WeatherNamespaceManager.ts" />
 
-
-	//TODO : pour test
-	/// <reference path="./sources/GetForecast.ts" />
-
-class Weather extends SourceServer {
+class WeatherService extends SourceServer {
 
 	/**
 	 * Constructor.
@@ -27,7 +23,7 @@ class Weather extends SourceServer {
 	}
 
 	/**
-	 * Method to init the Weather server.
+	 * Method to init the WeatherService server.
 	 *
 	 * @method init
 	 */
@@ -35,15 +31,6 @@ class Weather extends SourceServer {
 		var self = this;
 
 		this.addNamespace("Weather", WeatherNamespaceManager);
-
-		//TODO : pour test
-		var params : any = {};
-		params.Limit = 1;
-		params.InfoDuration = 10;
-		params.Latitude = "43.6270849";
-		params.Longitude = "7.0391623";
-
-		var fc : GetForecast = new GetForecast(params, null);
 	}
 }
 
@@ -65,5 +52,5 @@ var _WeatherListeningPort : number = process.env.PORT || 6021;
  */
 var _WeatherArguments : Array<string> = process.argv;
 
-var serverInstance = new Weather(_WeatherListeningPort, _WeatherArguments);
+var serverInstance = new WeatherService(_WeatherListeningPort, _WeatherArguments);
 serverInstance.run();
