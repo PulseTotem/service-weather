@@ -11,9 +11,10 @@
 
 /// <reference path="../core/ServiceConfig.ts" />
 
-/// <reference path="../../t6s-core/core-backend/t6s-core/core/scripts/infotype/PictureAlbum.ts" />
-/// <reference path="../../t6s-core/core-backend/t6s-core/core/scripts/infotype/Picture.ts" />
-/// <reference path="../../t6s-core/core-backend/t6s-core/core/scripts/infotype/PictureURL.ts" />
+/// <reference path="../core/WeatherHelper.ts" />
+
+/// <reference path="../../t6s-core/core-backend/t6s-core/core/scripts/infotype/Forecast.ts" />
+/// <reference path="../../t6s-core/core-backend/t6s-core/core/scripts/infotype/Weather.ts" />
 
 var uuid : any = require('node-uuid');
 var moment : any = require('moment');
@@ -50,9 +51,51 @@ class GetForecast extends SourceItf {
 		};
 
 		var successRetrieveForecast = function(result) {
-			var forecast = result.data();
+			var forecastJSON = result.data();
+
+			var forecast : Forecast = new Forecast();
+
+			var latitude = forecastJSON.latitude;
+			var longitude = forecastJSON.longitude;
+
+			forecast.setId(latitude + "-" + longitude);
+
+			var creationDate : any = moment();
+			forecast.setCreationDate(creationDate.toDate());
+
+			if(typeof(forecastJSON.currently) != "undefined") {
+				var currentWeather : Weather = WeatherHelper.buildWeather(forecastJSON.currently);
+				currentWeather.setDurationToDisplay(parseInt(self.getParams().InfoDuration));
+				currentWeather.setLatitude(latitude);
+				currentWeather.setLongitude(longitude);
 
 
+				forecast.setCurrent(currentWeather);
+
+				if(currentWeather.getTime() != null) {
+					var newCreationDate:any = moment(currentWeather.getTime());
+					forecast.setCreationDate(newCreationDate.toDate());
+				}
+			}
+
+			if(typeof(forecastJSON.hourly) != "undefined") {
+				forecastJSON.hourly.data.forEach(function(weatherJSON) {
+					var nextHourWeather : Weather = WeatherHelper.buildWeather(weatherJSON);
+
+					forecast.addNextHour(nextHourWeather);
+				});
+			}
+
+			if(typeof(forecastJSON.daily) != "undefined") {
+				forecastJSON.daily.data.forEach(function(weatherJSON) {
+					var nextDayWeather : Weather = WeatherHelper.buildWeather(weatherJSON);
+
+					forecast.addNextDay(nextDayWeather);
+				});
+			}
+
+			forecast.setDurationToDisplay(parseInt(self.getParams().InfoDuration));
+			self.getSourceNamespaceManager().sendNewInfoToClient(forecast);
 
 		};
 
